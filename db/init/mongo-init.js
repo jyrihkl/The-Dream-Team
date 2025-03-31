@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+// This script is run in an environment where Mongo etc. are defined, but eslint doesn't know that
+
 const user = fs.readFileSync(process.env.MONGODB_USERNAME_FILE, 'utf8').trim();
 const password = fs.readFileSync(process.env.MONGODB_PASSWORD_FILE, 'utf8').trim();
 
@@ -7,8 +10,8 @@ const db = conn.getDB(process.env.MONGODB_INITDB_DATABASE);
 
 // Auth as the root user
 db.auth({
-    user: process.env.MONGODB_INITDB_ROOT_USERNAME,
-    pwd: process.env.MONGODB_INITDB_ROOT_PASSWORD
+  user: process.env.MONGODB_INITDB_ROOT_USERNAME,
+  pwd: process.env.MONGODB_INITDB_ROOT_PASSWORD
 });
 
 // Create the user
