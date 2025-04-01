@@ -1,8 +1,10 @@
 /* eslint-disable no-undef */
 // This script is run in an environment where Mongo etc. are defined, but eslint doesn't know that
 
-const user = fs.readFileSync(process.env.MONGODB_USERNAME_FILE, 'utf8').trim();
-const password = fs.readFileSync(process.env.MONGODB_PASSWORD_FILE, 'utf8').trim();
+const user = fs.readFileSync(process.env.MONGODB_USERNAME_FILE, "utf8").trim();
+const password = fs
+  .readFileSync(process.env.MONGODB_PASSWORD_FILE, "utf8")
+  .trim();
 
 // Create connection to mongo
 const conn = new Mongo();
@@ -11,7 +13,7 @@ const db = conn.getDB(process.env.MONGODB_INITDB_DATABASE);
 // Auth as the root user
 db.auth({
   user: process.env.MONGODB_INITDB_ROOT_USERNAME,
-  pwd: process.env.MONGODB_INITDB_ROOT_PASSWORD
+  pwd: process.env.MONGODB_INITDB_ROOT_PASSWORD,
 });
 
 // Create the user
@@ -20,18 +22,18 @@ db.createUser({
   pwd: password,
   roles: [
     {
-      role: 'readWrite',
-      db: process.env.MONGODB_DATABASE
-    }
-  ]
+      role: "readWrite",
+      db: process.env.MONGODB_DATABASE,
+    },
+  ],
 });
 
 // Create new database
 const newDb = db.getSiblingDB(process.env.MONGODB_DATABASE);
 
 // Create collections
-newDb.createCollection('students');
-newDb.createCollection('projects');
+newDb.createCollection("students");
+newDb.createCollection("projects");
 
 // Create indices
 // TODO: Add indices
