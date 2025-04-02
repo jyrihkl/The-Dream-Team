@@ -33,6 +33,7 @@ jobs:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # https://github.com/marketplace/actions/super-linter#configure-super-linter
+          JAVA_FILE_NAME: "google_checks.xml"
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_CSS_PRETTIER: true
           VALIDATE_DOCKERFILE_HADOLINT: true
