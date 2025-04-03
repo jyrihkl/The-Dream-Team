@@ -1,12 +1,11 @@
 name: DreamTeam backend tests
 
-on:
+on: # yamllint disable-line rule:truthy
   push:
-    paths:
-      - backend/**
   pull_request:
     paths:
       - backend/**
+      - db/**
 
 jobs:
   test_backend:
