@@ -2,8 +2,7 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from scipy.spatial import distance
 try:
     from sentence_transformers import SentenceTransformer
@@ -13,7 +12,8 @@ except ModuleNotFoundError:
         print(f"SentenceTransformer package not imported! Tried loading model {reqModel}", file=sys.stderr)
         raise
 
-# luetaan dataa ja tehdään tauluja motivaatiolle versio 1
+# luetaan dataa ja tehdään tauluja motivaatiolle versio 2
+# added key word search
 def clean_data(load_name="rawData", save_name="cleaned_data_motivation"):
     # luetaan data
     bronze_data = storage.load_json(load_name)
@@ -76,6 +76,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data_motivation"):
     final_merge_df["similarity_score_max_whyExperience"] = temporary_df["similarity_score_max_whyExperience"]
 
     final_merge_df['was_selected'] = was_already_chosen(final_merge_df)
+    final_merge_df['keyword_found'] = keyword_search(final_merge_df)
 
     final_merge_df.drop(
         ['whyProject','whyExperience', 'chosenBatch'], axis=1, inplace=True)
@@ -184,19 +185,16 @@ def application_similarity(df):
             jbatch = row['chosenBatch']
             whyProject = row['whyProject']
             test_vec = model.encode([whyProject])[0]
-
             devider = 0
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
                     devider +=1
-          
                     row2 = df.iloc[j2]
                     whyProject2 = row2['whyProject']
                     temp = 1 - distance.cosine(test_vec, model.encode([whyProject2])[0])
                     similarity_score_avg_pro += temp
                     if temp > similarity_score_max_pro:
                         similarity_score_max_pro = temp
-
             if devider != 0:
                 similarity_score_avg_pro = similarity_score_avg_pro/devider
             df.loc[j, 'similarity_score_avg_whyProject'] = similarity_score_avg_pro
@@ -204,7 +202,6 @@ def application_similarity(df):
 
             whyExperience = row['whyExperience']
             test_vec = model.encode([whyExperience])[0]
-
             devider = 0
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
@@ -215,7 +212,6 @@ def application_similarity(df):
                     similarity_score_avg_exp += temp
                     if temp > similarity_score_max_exp:
                         similarity_score_max_exp = temp
-
             if devider != 0:
                 similarity_score_avg_exp = similarity_score_avg_exp /devider
             df.loc[
@@ -259,5 +255,31 @@ def was_already_chosen(df):
                         for i in temp:
                             df.at[i, 'was_selected'] = 1
     return df['was_selected']
-  
-#clean_data()
+
+def keyword_search(df):
+    # finds keywords in whyProject and whyExperience fields.
+    # keywords are given in the words_of_interest list.
+    # if a keyword is found it is marked as 1 else 0.
+
+    df = df[['whyProject', 'whyExperience', 'relation']]
+    df['whyProject'] = df['whyProject'].fillna("")
+    df['whyExperience'] = df['whyExperience'].fillna("")
+    df['keyword_found'] = 0
+
+    words_of_interest = ['curious', 'interesting', 'interested', 'interest',
+                        'fascinating', 'fascinated', 'engrossing',
+                        'compelling', 'intrigued', 'intriguing',
+                        'i want to explore', 'passion', 'passionate',
+                        'motivated']
+
+    for row in df.itertuples():
+        sentences = [row.whyProject, row.whyExperience]
+        for sent in sentences:
+            for word in words_of_interest:
+                if word in sent.lower():
+                    df.at[row.Index, 'keyword_found'] = 1
+                    break
+
+    return df['keyword_found']
+
+clean_data()
