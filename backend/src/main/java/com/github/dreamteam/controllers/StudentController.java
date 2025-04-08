@@ -6,7 +6,8 @@ package com.github.dreamteam.controllers;
 
 import com.github.dreamteam.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * StudentController is responsible for handling HTTP requests related to students. It provides

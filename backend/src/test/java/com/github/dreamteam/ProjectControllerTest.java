@@ -30,7 +30,7 @@ import org.springframework.web.servlet.View;
  * components.
  */
 @ExtendWith(MockitoExtension.class)
-class ProjectControllerTests {
+class ProjectControllerTest {
 
   @Mock private ProjectServiceImpl projectService;
 

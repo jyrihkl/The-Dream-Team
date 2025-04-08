@@ -10,6 +10,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
+/**
+ * The configuration class for MongoDB client settings. It extends the
+ * AbstractMongoClientConfiguration class to provide custom MongoDB client settings.
+ *
+ * <p>This class is responsible for configuring the MongoDB client, including the connection string
+ * and database name. It uses Spring's @Value annotation to inject the connection string and
+ * database name from application properties.
+ */
 @Configuration
 public class MongoClientConfig extends AbstractMongoClientConfiguration {
 

@@ -15,6 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * The service implementation for managing Project entities. It provides methods to retrieve all
+ * projects with an optional limit on the number of projects returned.
+ */
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
@@ -23,6 +27,11 @@ public class ProjectServiceImpl implements ProjectService {
 
   // TODO: Add index
 
+  /**
+   * Constructor for ProjectServiceImpl. Initializes the MongoDB collection for projects.
+   *
+   * @param mongoTemplate The MongoTemplate instance used to interact with MongoDB.
+   */
   public ProjectServiceImpl(MongoTemplate mongoTemplate) {
     this.projectCollection = mongoTemplate.getCollection("projects");
   }

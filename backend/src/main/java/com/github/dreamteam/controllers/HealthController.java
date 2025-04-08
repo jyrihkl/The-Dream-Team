@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/health")
 public class HealthController {
+  /**
+   * Health check endpoint to verify if the service is running.
+   *
+   * @return a response indicating the service status.
+   */
   @GetMapping
   public ResponseEntity<String> checkHealth() {
     return ResponseEntity.ok("Service is up and running");
