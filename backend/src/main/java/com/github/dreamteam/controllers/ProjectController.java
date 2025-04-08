@@ -52,6 +52,7 @@ public class ProjectController {
   public Collection<Document> getProjects(
       @RequestParam(required = false) Optional<String> status,
       @RequestParam(required = false) Optional<Integer> limit) {
+    LOGGER.info("Fetching all projects from MongoDB with status {}", status.orElse("all"));
     if (limit.isPresent()) {
       return projectService.getAllProjects(limit.get());
     } else {
@@ -67,6 +68,7 @@ public class ProjectController {
    */
   @GetMapping("/{projectId}/students")
   public Collection<Document> getStudents(@PathVariable Long projectId) {
+    LOGGER.info("Fetching all students from MongoDB for project {}", projectId);
     return studentService.getStudentsByProject(projectId);
   }
 
@@ -79,6 +81,7 @@ public class ProjectController {
   @PostMapping("/predict")
   public ModelAndView predict(HttpServletRequest request) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
+    LOGGER.info("Redirecting to ML component for prediction.");
     return new ModelAndView("redirect:/ml/score/predict");
   }
 
@@ -96,6 +99,10 @@ public class ProjectController {
       @PathVariable Long projectId,
       @RequestParam(required = false) Optional<String> scoreFile) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
+    LOGGER.info(
+        "Redirecting to ML component for scores of project {} using score file {}",
+        projectId,
+        scoreFile.orElse("default"));
     StringBuilder redirectUrl =
         new StringBuilder("redirect:/ml/score/scores?projectId=").append(projectId);
     if (scoreFile.isPresent()) {
@@ -115,6 +122,9 @@ public class ProjectController {
   public ModelAndView getAllScores(
       HttpServletRequest request, @RequestParam(required = false) Optional<String> scoreFile) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
+    LOGGER.info(
+        "Redirecting to ML component for all scores using score file {}",
+        scoreFile.orElse("default"));
     StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores");
     if (scoreFile.isPresent()) {
       redirectUrl.append("?scoreFile=").append(scoreFile.get());
@@ -140,6 +150,13 @@ public class ProjectController {
       @RequestParam(required = false) Optional<String> dataFile,
       @RequestParam(required = false) Optional<String> saveFile) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
+    LOGGER.info(
+        "Redirecting to ML component for building team for project {} with size {} using data file"
+            + " {} and save file {}",
+        projectId,
+        size.orElse(0),
+        dataFile.orElse("default"),
+        saveFile.orElse("default"));
     StringBuilder redirectUrl =
         new StringBuilder("redirect:/ml/team/build-team?projectId=").append(projectId);
     if (size.isPresent()) {
