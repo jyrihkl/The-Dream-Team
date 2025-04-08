@@ -71,10 +71,10 @@ public class ProjectController {
   }
 
   /**
-   * Retrieves a collection of students associated with a specific project and their scores.
+   * Redirects to the ML component for making predictions.
    *
-   * @param projectId The ID of the project for which to retrieve students and scores.
-   * @return A collection of students and their scores associated with the specified project.
+   * @param request The HTTP request object.
+   * @return A ModelAndView object redirecting to the ML component's prediction page.
    */
   @PostMapping("/predict")
   public ModelAndView predict(HttpServletRequest request) {
@@ -105,7 +105,7 @@ public class ProjectController {
   }
 
   /**
-   * Retrieves a collection of scores associated with a specific project.
+   * Retrieves a collection of scores associated with all projects.
    *
    * @param request The HTTP request object.
    * @param scoreFile Optional parameter for specifying a score file.

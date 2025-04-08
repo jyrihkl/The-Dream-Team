@@ -18,12 +18,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * * The service implementation for managing Student entities. It provides a method to retrieve a
+ * collection of students associated with a specific project ID. The service uses MongoDB to store
+ * and retrieve student data.
+ */
 @Service
 public class StudentServiceImpl implements StudentService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
   private final MongoCollection<Document> studentCollection;
 
+  /**
+   * Constructs a new StudentServiceImpl instance with the provided MongoTemplate.
+   *
+   * @param mongoTemplate The MongoTemplate used to interact with the MongoDB database.
+   */
   public StudentServiceImpl(MongoTemplate mongoTemplate) {
     this.studentCollection = mongoTemplate.getCollection("students");
   }
