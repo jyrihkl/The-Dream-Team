@@ -1,3 +1,4 @@
+/** The main package for the Dreamteam application. */
 package com.github.dreamteam;
 
 import com.mongodb.ConnectionString;
@@ -20,11 +21,26 @@ public class MongoClientConfig extends AbstractMongoClientConfiguration {
   @Value("${spring.data.mongodb.uri}")
   private String connectionString;
 
+  /**
+   * Returns the MongoDB database name.
+   *
+   * @return The name of the database.
+   */
   @Override
   protected String getDatabaseName() {
     return databaseName;
   }
 
+  /**
+   * Returns the MongoDB client settings.
+   *
+   * <p>This method is responsible for configuring the MongoDB client settings, including the
+   * connection string. It uses the {@link ConnectionString} class to parse the connection string
+   * and create a {@link MongoClientSettings} object. The connection string is logged for debugging
+   * purposes, but the credentials are redacted for security reasons.
+   *
+   * @return The MongoClientSettings object containing the connection settings.
+   */
   @Bean
   public MongoClientSettings mongoClientSettings() {
     // Log connection string, but leave out credentials

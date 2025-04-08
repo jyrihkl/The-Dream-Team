@@ -1,3 +1,7 @@
+/**
+ * This package has all the controllers for the backend. It is responsible for handling HTTP
+ * requests and responses.
+ */
 package com.github.dreamteam.controllers;
 
 import com.github.dreamteam.exceptions.EntityNotFoundException;
@@ -15,6 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
+/**
+ * ProjectController is responsible for handling HTTP requests related to projects. It provides
+ * endpoints for retrieving project information, managing students, and interacting with the ML
+ * component.
+ */
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -25,6 +34,13 @@ public class ProjectController {
 
   @Autowired private StudentService studentService;
 
+  /**
+   * Retrieves a collection of projects based on the provided status and limit parameters.
+   *
+   * @param status Optional status filter for projects.
+   * @param limit Optional limit on the number of projects to retrieve.
+   * @return A collection of projects matching the criteria.
+   */
   @GetMapping
   public Collection<Document> getProjects(
       @RequestParam(required = false) Optional<String> status,
@@ -36,17 +52,37 @@ public class ProjectController {
     }
   }
 
+  /**
+   * Retrieves a collection of students associated with a specific project.
+   *
+   * @param projectId The ID of the project for which to retrieve students.
+   * @return A collection of students associated with the specified project.
+   */
   @GetMapping("/{projectId}/students")
   public Collection<Document> getStudents(@PathVariable Long projectId) {
     return studentService.getStudentsByProject(projectId);
   }
 
+  /**
+   * Retrieves a collection of students associated with a specific project and their scores.
+   *
+   * @param projectId The ID of the project for which to retrieve students and scores.
+   * @return A collection of students and their scores associated with the specified project.
+   */
   @PostMapping("/predict")
   public ModelAndView predict(HttpServletRequest request) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
     return new ModelAndView("redirect:/ml/score/predict");
   }
 
+  /**
+   * Retrieves a collection of scores associated with a specific project.
+   *
+   * @param request The HTTP request object.
+   * @param projectId The ID of the project for which to retrieve scores.
+   * @param scoreFile Optional parameter for specifying a score file.
+   * @return A ModelAndView object redirecting to the scores page.
+   */
   @GetMapping("/{projectId}/scores")
   public ModelAndView getScores(
       HttpServletRequest request,
@@ -61,6 +97,13 @@ public class ProjectController {
     return new ModelAndView(redirectUrl.toString());
   }
 
+  /**
+   * Retrieves a collection of scores associated with a specific project.
+   *
+   * @param request The HTTP request object.
+   * @param scoreFile Optional parameter for specifying a score file.
+   * @return A ModelAndView object redirecting to the scores page.
+   */
   @GetMapping("/scores")
   public ModelAndView getAllScores(
       HttpServletRequest request, @RequestParam(required = false) Optional<String> scoreFile) {
@@ -72,6 +115,16 @@ public class ProjectController {
     return new ModelAndView(redirectUrl.toString());
   }
 
+  /**
+   * Builds a team for a specific project using the ML component.
+   *
+   * @param request The HTTP request object.
+   * @param projectId The ID of the project for which to build a team.
+   * @param size Optional parameter for specifying the size of the team.
+   * @param dataFile Optional parameter for specifying a data file.
+   * @param saveFile Optional parameter for specifying a save file.
+   * @return A ModelAndView object redirecting to the build team page.
+   */
   @PostMapping("{projectId}/team")
   public ModelAndView buildTeam(
       HttpServletRequest request,
@@ -94,12 +147,22 @@ public class ProjectController {
     return new ModelAndView(redirectUrl.toString());
   }
 
+  /**
+   * Handles EntityNotFoundException and returns a 404 Not Found response.
+   *
+   * @param e The EntityNotFoundException to handle.
+   */
   @ExceptionHandler(EntityNotFoundException.class)
   @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "MongoDB didn't find any document.")
   public final void handleNotFoundExceptions(EntityNotFoundException e) {
     LOGGER.info("=> Not found: {}", e.toString());
   }
 
+  /**
+   * Handles RuntimeException and returns a 500 Internal Server Error response.
+   *
+   * @param e The RuntimeException to handle.
+   */
   @ExceptionHandler(RuntimeException.class)
   @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Internal Server Error")
   public final void handleAllExceptions(RuntimeException e) {

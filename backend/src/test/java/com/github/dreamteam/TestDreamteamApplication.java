@@ -1,3 +1,4 @@
+/** The main package for the TestDreamteam application. */
 package com.github.dreamteam;
 
 import org.springframework.boot.SpringApplication;

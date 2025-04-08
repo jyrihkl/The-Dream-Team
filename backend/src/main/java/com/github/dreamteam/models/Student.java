@@ -1,3 +1,7 @@
+/**
+ * This package has all the models for the backend. It is responsible for defining the data
+ * structures used in the application.
+ */
 package com.github.dreamteam.models;
 
 import java.util.List;
@@ -7,6 +11,10 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Student represents the data structure used for storing student-related information. It includes
+ * fields such as student ID, name, home university, attending university, city, CV link, degree
+ */
 @Document(collection = "students")
 @Data
 @AllArgsConstructor
