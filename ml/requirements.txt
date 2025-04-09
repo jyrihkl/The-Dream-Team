@@ -5,9 +5,11 @@ numpy
 packaging
 pandas
 pytest
+pytest-mock
 scikit-learn
 scipy
 uvicorn
 xgboost
 imbalanced-learn
 #sentence_transformers
+
