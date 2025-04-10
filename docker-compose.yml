@@ -137,7 +137,10 @@ services:
 
   frontend:
     # Frontend service for demo purposes
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - DEMO_MODE=true
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_PORT:-3000}"
