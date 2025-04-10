@@ -21,6 +21,7 @@ export type Student = {
   whyJoinDemola: string,
   whyRole: string,
   applications: ApplicationData[],
+  fakeName?: string,
   score?: Score
 };
 
