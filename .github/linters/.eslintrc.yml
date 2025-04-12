@@ -14,9 +14,6 @@ ignorePatterns:
 plugins:
   - prettier
 
-rules:
-  react/react-in-jsx-scope: off
-
 overrides:
   # JSON files
   - files:
@@ -69,6 +66,7 @@ overrides:
     extends:
       - "plugin:@typescript-eslint/recommended"
       - plugin:react/recommended
+      - plugin:react/jsx-runtime
       - prettier
     parser: "@typescript-eslint/parser"
     plugins:
