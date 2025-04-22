@@ -198,6 +198,50 @@ public class ProjectController {
   }
 
   /**
+   * Builds a dream team for a specific project using the ML component.
+   *
+   * @param request The HTTP request object.
+   * @param projectId The ID of the project for which to build a dream team.
+   * @param size Optional parameter for specifying the size of the dream team.
+   * @param applicants Optional parameter for specifying the applicants.
+   * @param scores Optional parameter for specifying the scores.
+   * @param motivations Optional parameter for specifying the motivations.
+   * @param saveFile Optional parameter for specifying a save file.
+   * @return A ModelAndView object redirecting to the build dream team page.
+   */
+  @PostMapping("/{projectId}/dream-team")
+  public ModelAndView buildDreamTeam(
+      HttpServletRequest request,
+      @PathVariable Long projectId,
+      @RequestParam(required = false) Optional<Integer> size,
+      @RequestParam(required = false) Optional<String> applicants,
+      @RequestParam(required = false) Optional<String> scores,
+      @RequestParam(required = false) Optional<String> motivations,
+      @RequestParam(required = false) Optional<String> saveFile) {
+    request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
+    LOGGER.info(
+        "Redirecting to ML component for building dream team for project {} with size {} using"
+            + " applicants {}, scores {}, motivations {}, and save file {}",
+        projectId,
+        size.orElse(0),
+        applicants.orElse("default"),
+        scores.orElse("default"),
+        motivations.orElse("default"),
+        saveFile.orElse("default"));
+
+    UriComponentsBuilder builder =
+        UriComponentsBuilder.fromPath("redirect:/ml/team/dream-team")
+            .queryParam("projectId", projectId);
+    size.ifPresent(s -> builder.queryParam("team_size", s));
+    applicants.ifPresent(a -> builder.queryParam("applicants", a));
+    scores.ifPresent(s -> builder.queryParam("scores", s));
+    motivations.ifPresent(m -> builder.queryParam("motivations", m));
+    saveFile.ifPresent(file -> builder.queryParam("save_file", file));
+
+    return new ModelAndView(builder.toUriString());
+  }
+
+  /**
    * Handles EntityNotFoundException and returns a 404 Not Found response.
    *
    * @param e The EntityNotFoundException to handle.
