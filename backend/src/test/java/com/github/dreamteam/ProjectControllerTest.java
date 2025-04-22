@@ -98,11 +98,30 @@ class ProjectControllerTest {
    */
   @Test
   void testPredictRedirect() {
-    // FIXME: Change to use the correct method when implemented
-    // var response = projectController.predict(request);
+    /**
+     * Redirects to the ML component for making predictions based on the provided parameters.
+     *
+     * @param request The HTTP request object.
+     * @param modelType Optional parameter for specifying the model type.
+     * @param modelName Optional parameter for specifying the model name.
+     * @param data Optional parameter for specifying the data to be used for predictions.
+     * @param cleaning Optional parameter for specifying whether to clean the data.
+     * @param saveFile Optional parameter for specifying a save file.
+     * @return A ModelAndView object redirecting to the ML component for predictions.
+     */
+    var response =
+        projectController.predict(
+            request,
+            Optional.of("modelType"),
+            Optional.of("modelName"),
+            Optional.of("data"),
+            Optional.of(false),
+            Optional.of("saveFile"));
 
-    // assertThat(response.getViewName()).isEqualTo("redirect:/ml/score/predict");
-    // verify(request).setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
+    assertThat(response.getViewName()).startsWith("redirect:/ml/score/predict");
+    assertThat(response.getViewName()).contains("model_type=modelType");
+    assertThat(response.getViewName()).contains("saveFile=saveFile");
+    verify(request).setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
   }
 
   /**

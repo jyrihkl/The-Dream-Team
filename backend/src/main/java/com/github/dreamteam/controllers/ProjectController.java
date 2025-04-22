@@ -133,7 +133,7 @@ public class ProjectController {
         scoreFile.orElse("default"));
 
     UriComponentsBuilder builder =
-        UriComponentsBuilder.fromPath("redirect:/ml/score/scores)")
+        UriComponentsBuilder.fromPath("redirect:/ml/score/scores")
             .queryParam("projectId", projectId);
     scoreFile.ifPresent(file -> builder.queryParam("scoreFile", file));
 
