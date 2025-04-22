@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * ProjectController is responsible for handling HTTP requests related to projects. It provides
@@ -73,16 +74,43 @@ public class ProjectController {
   }
 
   /**
-   * Redirects to the ML component for making predictions.
+   * Redirects to the ML component for making predictions based on the provided parameters.
    *
    * @param request The HTTP request object.
-   * @return A ModelAndView object redirecting to the ML component's prediction page.
+   * @param modelType Optional parameter for specifying the model type.
+   * @param modelName Optional parameter for specifying the model name.
+   * @param data Optional parameter for specifying the data to be used for predictions.
+   * @param cleaning Optional parameter for specifying whether to clean the data.
+   * @param saveFile Optional parameter for specifying a save file.
+   * @return A ModelAndView object redirecting to the ML component for predictions.
    */
   @PostMapping("/predict")
-  public ModelAndView predict(HttpServletRequest request) {
+  public ModelAndView predict(
+      HttpServletRequest request,
+      @RequestParam(required = false) Optional<String> modelType,
+      @RequestParam(required = false) Optional<String> modelName,
+      @RequestParam(required = false) Optional<String> data,
+      @RequestParam(required = false) Optional<Boolean> cleaning,
+      @RequestParam(required = false) Optional<String> saveFile) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
-    LOGGER.info("Redirecting to ML component for prediction.");
-    return new ModelAndView("redirect:/ml/score/predict");
+    LOGGER.info(
+        "Redirecting to ML component for predictions with params: modelType {}, modelName {}, data"
+            + " {}, cleaning {}, saveFile {}",
+        modelType.orElse("default"),
+        modelName.orElse("default"),
+        data.orElse("default"),
+        cleaning.orElse(false),
+        saveFile.orElse("default"));
+
+    UriComponentsBuilder builder = UriComponentsBuilder.fromPath("redirect:/ml/score/predict");
+    modelType.ifPresent(type -> builder.queryParam("model_type", type));
+    modelName.ifPresent(name -> builder.queryParam("model_name", name));
+    data.ifPresent(d -> builder.queryParam("data", d));
+    cleaning.ifPresent(c -> builder.queryParam("cleaning", c));
+    saveFile.ifPresent(file -> builder.queryParam("saveFile", file));
+    String redirectUrl = builder.toUriString();
+
+    return new ModelAndView(redirectUrl);
   }
 
   /**
@@ -103,12 +131,13 @@ public class ProjectController {
         "Redirecting to ML component for scores of project {} using score file {}",
         projectId,
         scoreFile.orElse("default"));
-    StringBuilder redirectUrl =
-        new StringBuilder("redirect:/ml/score/scores?projectId=").append(projectId);
-    if (scoreFile.isPresent()) {
-      redirectUrl.append("&scoreFile=").append(scoreFile.get());
-    }
-    return new ModelAndView(redirectUrl.toString());
+
+    UriComponentsBuilder builder =
+        UriComponentsBuilder.fromPath("redirect:/ml/score/scores)")
+            .queryParam("projectId", projectId);
+    scoreFile.ifPresent(file -> builder.queryParam("scoreFile", file));
+
+    return new ModelAndView(builder.toUriString());
   }
 
   /**
@@ -125,11 +154,11 @@ public class ProjectController {
     LOGGER.info(
         "Redirecting to ML component for all scores using score file {}",
         scoreFile.orElse("default"));
-    StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores");
-    if (scoreFile.isPresent()) {
-      redirectUrl.append("?scoreFile=").append(scoreFile.get());
-    }
-    return new ModelAndView(redirectUrl.toString());
+
+    UriComponentsBuilder builder = UriComponentsBuilder.fromPath("redirect:/ml/score/scores");
+    scoreFile.ifPresent(file -> builder.queryParam("scoreFile", file));
+
+    return new ModelAndView(builder.toUriString());
   }
 
   /**
@@ -157,18 +186,15 @@ public class ProjectController {
         size.orElse(0),
         dataFile.orElse("default"),
         saveFile.orElse("default"));
-    StringBuilder redirectUrl =
-        new StringBuilder("redirect:/ml/team/build-team?projectId=").append(projectId);
-    if (size.isPresent()) {
-      redirectUrl.append("&size=").append(size.get());
-    }
-    if (dataFile.isPresent()) {
-      redirectUrl.append("&data=").append(dataFile.get());
-    }
-    if (saveFile.isPresent()) {
-      redirectUrl.append("&saveFile=").append(saveFile.get());
-    }
-    return new ModelAndView(redirectUrl.toString());
+
+    UriComponentsBuilder builder =
+        UriComponentsBuilder.fromPath("redirect:/ml/team/build-team")
+            .queryParam("projectId", projectId);
+    size.ifPresent(s -> builder.queryParam("size", s));
+    dataFile.ifPresent(file -> builder.queryParam("data", file));
+    saveFile.ifPresent(file -> builder.queryParam("saveFile", file));
+
+    return new ModelAndView(builder.toString());
   }
 
   /**
