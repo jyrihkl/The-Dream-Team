@@ -2,7 +2,7 @@
 import { createContext, useContext, useMemo, useState, ReactNode, useEffect } from "react";
 
 /* Components, services & etc. */
-import { getML_status, setTeamSize as serviceSetTeamSize, setML_status } from "./ml.service";
+import { getML_status, setTeamSize as serviceSetTeamSize, setML_status } from "../../services/ML/ml.service";
 
 /* Types */
 import { MLContextType, TrainingStatus } from "../../types/ML";

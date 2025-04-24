@@ -5,9 +5,9 @@ import { FormEvent } from "react";
 import { TrainingStatus } from "../../types/ML";
 
 /* Components, services & etc. */
-import { useAuth } from "../../services/auth/auth.provider";
+import { useAuth } from "../../providers/auth/auth.provider";
 import { initML } from "../../services/score/score.service";
-import { useML } from "../../services/ML/ml.provider";
+import { useML } from "../../providers/ML/ml.provider";
 
 /* Styling */
 import "./training.page.scss";
