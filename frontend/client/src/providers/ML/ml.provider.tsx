@@ -12,7 +12,7 @@ type MLProviderProps = {
 }
 
 const INITIAL_VALUES: MLContextType = {
-    ml_type: import.meta.env.ML_TYPE ?? "advanced",
+    ml_type: import.meta.env.VITE_ML_TYPE ?? "advanced",
     status: getML_status(),
     setStatus: () => {},
     teamSize: 4,
