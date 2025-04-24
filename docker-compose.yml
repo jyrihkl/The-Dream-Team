@@ -160,7 +160,10 @@ services:
 
   ml:
     # The machine learning service used for ranking and team forming
-    build: ./ml
+    build:
+      context: ./ml
+      args:
+        - ML_REQ=requirements-full.txt
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.ml.loadbalancer.server.port=${ML_PORT:-9696}"
