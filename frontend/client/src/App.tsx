@@ -5,14 +5,17 @@ import { Routes } from "./services/router/router.provider";
 
 /* Styling */
 import './App.scss';
+import { MLProvider } from "./services/ML/ml.provider";
 
 
 function App() {
   return (
     <AuthProvider>
-      <ProjectProvider>
-        <Routes />
-      </ProjectProvider>
+      <MLProvider>
+        <ProjectProvider>
+          <Routes />
+        </ProjectProvider>
+      </MLProvider>
     </AuthProvider>
   );
 }

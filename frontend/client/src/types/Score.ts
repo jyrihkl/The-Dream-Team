@@ -18,3 +18,25 @@ export type ProjectTeam = {
     projectId: number,
     team: ScoreRequest[]
 }
+
+export type TeamMember = {
+    studentId: number
+}
+
+export type NewStudentScore = {
+    projectId: number,
+    studentId: number,
+    whyProject: number,
+    whyExperience: number,
+    location_match: number,
+    field: number,
+    score: number,
+    motivation_score: number,
+    final_score: number,
+}
+
+export type ProjectDreamTeam = {
+    best_overall: NewStudentScore[],
+    perfect_team: NewStudentScore[],
+    diverse_teams: NewStudentScore[][],
+}

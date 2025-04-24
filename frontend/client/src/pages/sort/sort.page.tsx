@@ -18,6 +18,7 @@ import { addInitialStudentLocations, addStudentLocationsViaML } from "./students
 import { useAuth } from "../../services/auth/auth.provider";
 import { getStudents } from "../../services/student/student.service";
 import { handleDragEnd, parseDragIDs } from "./drag-helpers";
+import { useML } from "../../services/ML/ml.provider";
 import { addScoreForStudents } from "./score-helpers";
 import { createStudentSorter } from "./sorting";
 
@@ -63,7 +64,7 @@ const Sort = () => {
         const projectId = +id!;
         const oldUnwrappedStudents = students.map(wrapped => wrapped.student);
 
-        const newStudents = await addStudentLocationsViaML(projectId, oldUnwrappedStudents, token!);
+        const newStudents = await addStudentLocationsViaML(projectId, oldUnwrappedStudents, token!, useML());
         setStudents(newStudents);
 
         updateAllStudentLabels(currentProject!.name, newStudents);

@@ -5,7 +5,7 @@
     align-content: center;
 
     & > .initializer {
-        display: flex;
+        // display: flex;
         align-items: center;
         justify-content: center;
         align-content: center;
@@ -18,19 +18,34 @@
             text-shadow: gray 1px 1px 1px;
         }
 
-        & > button {
-            font-size: 1em;
-            margin-left: 10px;
-            padding: 0.5em;
-            border-radius: 0.5em;
-            border: 1px solid var(--blue);
-            background-color: var(--uranian);
-            cursor: pointer;
-            &:hover {
-                background-color: var(--dark-uranian);
-                border: 3px solid var(--blue)
+        & > .inputs {
+            padding-top: 1em;
+            margin: auto;
+            width: fit-content;
+
+            & > label {
+                width: min-content;
+                & > input {
+                    width: 2em;
+                }
+            }
+
+            & > button {
+                font-size: 1em;
+                margin-left: 10px;
+                padding: 0.5em;
+                border-radius: 0.5em;
+                border: 1px solid var(--blue);
+                background-color: var(--uranian);
+                cursor: pointer;
+                &:hover {
+                    background-color: var(--dark-uranian);
+                    border: 3px solid var(--blue)
+                }
             }
         }
+
+        
     }
 
     & > .training-status > p {
