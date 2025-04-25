@@ -30,7 +30,8 @@ export const getScores = (projectID: Project["id"], token: AuthToken): Promise<P
     if (!USE_SERVER) return Promise.resolve(defaultScoreFetcher(projectID));
 
     // FIXME: REMOVE THAT DUMB env var check and handle that somehow else
-    return callAPI<ProjectScore>(`/projects/${projectID}/scores${import.meta.env.VITE_ML_TYPE === "advanced" ? "?scoreFile=score_default" : ""}`, token).catch(errorHandler);
+    // return callAPI<ProjectScore>(`/projects/${projectID}/scores${import.meta.env.VITE_ML_TYPE === "advanced" ? "?scoreFile=score_default" : ""}`, token).catch(errorHandler);
+    return callAPI<ProjectScore>(`/projects/${projectID}/scores`, token).catch(errorHandler);
 }
 
 export const getTeam = (projectID: Project["id"], token: AuthToken, mlType: ML_initType, teamSize?: number): Promise<TeamMember[]> => {
@@ -51,6 +52,6 @@ export const getTeam = (projectID: Project["id"], token: AuthToken, mlType: ML_i
         `/projects/${projectID}/dream-team?applicants=clean_default&scores=score_default&motivations=motivation_score&team_size=${teamSize!}&save_file=dreamteam`,
         token, "POST"
     ).then(
-        dreamTeam => dreamTeam.best_overall.map(teamMember => ({ studentId: teamMember.studentId }))
+        dreamTeam => dreamTeam.best_overall.map(teamMember => ({ studentId: teamMember.studentId, score: teamMember.score, motivation_score: teamMember.motivation_score }))
     ).catch(errorHandler);
 }
