@@ -48,7 +48,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data_motivation"):
 
     needed_fields_student = ['id', 'cvLink','socialNetworkLinks',
                              'studiesDescription','whyJoinDemola',
-                             'whyGoodCreator','whyRole', 'degreeLevelType']
+                             'whyGoodCreator','whyRole', 'degreeLevelType', 'applications']
 
     if not check_fields(needed_fields_student, df, 'students'):
         return None

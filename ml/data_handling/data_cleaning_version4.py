@@ -55,7 +55,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     temp = json.dumps(bronze_data['students'])
     df = pd.read_json(StringIO(temp))
 
-    needed_fields_student = ['id','city', 'degreeLevelType', 'studiesField']
+    needed_fields_student = ['id','city', 'degreeLevelType', 'studiesField', 'applications']
 
     if not check_fields(needed_fields_student, df, 'students'):
         return None
