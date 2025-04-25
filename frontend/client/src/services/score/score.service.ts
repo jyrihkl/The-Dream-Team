@@ -27,7 +27,10 @@ export const getScores = (projectID: Project["id"], token: AuthToken): Promise<P
         return { projectId: -1, scores: [] };
     };
 
-    return USE_SERVER ? callAPI<ProjectScore>(`/projects/${projectID}/scores`, token).catch(errorHandler) : Promise.resolve(defaultScoreFetcher(projectID));
+    if (!USE_SERVER) return Promise.resolve(defaultScoreFetcher(projectID));
+
+    // FIXME: REMOVE THAT DUMB env var check and handle that somehow else
+    return callAPI<ProjectScore>(`/projects/${projectID}/scores${import.meta.env.VITE_ML_TYPE === "advanced" ? "?scoreFile=score_default" : ""}`, token).catch(errorHandler);
 }
 
 export const getTeam = (projectID: Project["id"], token: AuthToken, mlType: ML_initType, teamSize?: number): Promise<TeamMember[]> => {
