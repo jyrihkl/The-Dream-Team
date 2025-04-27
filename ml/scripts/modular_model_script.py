@@ -2,7 +2,11 @@ from models import get_model
 import json
 
 #can be run via \ml>python -m scripts.modular_model_script
-#Models: randomforest_v2, meta_model
+
+
+"""
+Simple script to run and test ML models and their modularity locally
+"""
 
 MODEL_NAME = "stacking_model"
 #motivational_model_v1

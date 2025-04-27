@@ -3,6 +3,10 @@ from utils import storage
 #called from The-Dream-Team\ml>python -m scripts.storage_test
 #expects test.json to be in local storage (data)
 
+"""
+Simple script to run and test storage util functionality locally
+"""
+
 print(storage.load_json("test"))
 
 print("\n")

@@ -15,7 +15,7 @@ def build_team(
     saveFile: str = Query(default="APIteam", description="Name of the file team is saved")
 ):
     """
-    Builds the team based on stored predictions/scores
+    Builds the BASELINE TEAM based on stored predictions/scores
 
      Args:
         projectId (int): id for project
@@ -168,6 +168,11 @@ def dream_team(
             status_code=200,
             content=dream_team
         )
+    except ValueError as ve:
+        return JSONResponse(
+            status_code=422,  # Unprocessable Entity
+            content={"detail": str(ve)}
+    )
     except Exception as e:
         return JSONResponse(
             status_code=500,

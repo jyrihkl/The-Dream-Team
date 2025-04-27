@@ -13,15 +13,44 @@ def build_team(project_id: Optional[int] = None,
                motivation_score:str="stacking_model_moti_scores", 
                save_name:str="dream_team_example") -> dict:
     """
+    Builds team(s) for one or more projects based on applicant scores, motivation, and other criteria.
+
+    If a `project_id` is provided, builds teams only for that project. Otherwise, attempts to build
+    valid teams for all projects in the dataset. The resulting teams are saved to a JSON file.
+
     Args:
-        project_id (int): The project ID for which the team is being formed.
-                          if None, creates teams for as many projects as possible
-        team_size (int): Number of students to include in the team.
-        applicant_data (str): Name of the JSON file containing cleaned version of data (example rawData cleaned using data_cleaning_version4)
-        score_data (str): Name of the JSON file containing scores.
-        motivation_data (str): Name of the JSON file containing motivation data.
-        save_name (str): Name of the JSON file to save the created team.
-   
+        project_id (Optional[int]): ID of the project to build a team for. If None, teams are generated
+            for all available projects.
+        team_size (int): Number of students to include in each team.
+        applicant_data (str): Filename of the JSON file containing cleaned applicant data.
+        score_data (str): Filename of the JSON file containing model-generated scores.
+        motivation_score (str): Filename of the JSON file containing motivation-related scores.
+        save_name (str): Name of the JSON file where the output will be saved.
+
+    Returns:
+        dict: A dictionary of team suggestions. Format varies depending on whether the function
+        is called for a single project or all projects.
+
+        For a single project:
+            {
+                "best_overall": [...],
+                "perfect_team": [...],
+                "diverse_teams": [...],
+            }
+
+        For all projects:
+            {
+                "teams": [...],
+                "project_failure_reasons": {...}
+            }
+
+    Raises:
+        ValueError: If no valid teams can be formed for the given input.
+        Exception: For unexpected runtime errors.
+
+    Note:
+        - All team suggestions are saved to `save_name` as a JSON file.
+        - You may want to handle empty or None returns in the API layer.
     """
 
     try:
@@ -42,23 +71,21 @@ def build_team(project_id: Optional[int] = None,
         projects = sorted({entry["projectId"] for entry in data})
         print(f"Projects in dataset ({len(projects)} total)")
 
-        """
-        Example data so far:
-        [
-            {
-                "projectId": 1047.0,
-                "studentId": 22092.0,
-                "whyProject": 0.7010136246681213,
-                "whyExperience": 0.6258683204650879,
-                "location_match": 2.0,
-                "field": 17,
-                "score": 94.74833679199219,
-                "motivation_score": 60.20457077026367,
-                "final_score": 74.22952539920807
-            }
-        ]
-
-        """
+        
+        #Data example:
+        #[
+        #    {
+        #        "projectId": 1047.0,
+        #        "studentId": 22092.0,
+        #        "whyProject": 0.7010136246681213,
+        #        "whyExperience": 0.6258683204650879,
+        #        "location_match": 2.0,
+        #        "field": 17,
+        #        "score": 94.74833679199219,
+        #        "motivation_score": 60.20457077026367,
+        #        "final_score": 74.22952539920807
+        #    }
+        #]
 
         #Suggest teams for a single project
         if not all_teams:
@@ -68,16 +95,6 @@ def build_team(project_id: Optional[int] = None,
 
             project_teams = suggest_teams_for_project(project_applicants, project_id, team_size)
             
-            """
-            project_teams is a list of suggested teams:
-            {
-            "best_overall": best_team, #average teams score highest
-            "perfect_team": perfect_team, #Individual scores are highest
-            "diverse_teams": diverse_teams[:3],  #top 3 diverse suggestions
-            "all_teams": valid_teams  #All valid teams
-            }
-
-            """
             if project_teams is None:
                 raise ValueError(f"No teams could be formed for project {project_id}.")
             
@@ -88,51 +105,22 @@ def build_team(project_id: Optional[int] = None,
         suggested_teams = suggest_teams_for_all_projects(data)
 
         if suggested_teams is None:
-                raise ValueError("No suggested teams something went wrong.")
+                raise ValueError("No suggested teams, something went wrong.")
             
 
         project_ids_with_teams = {team["projectId"] for team in suggested_teams['teams']}
         print(f"Projects with teams formed: {len(project_ids_with_teams)}")
         print(f"Project IDs: {sorted(project_ids_with_teams)}")
 
-        """
-        Suggested teams example:
-        {
-            "teams": final_teams,
-            "project_failure_reasons": project_failure_reasons,
-        }
-            final_teams:
-            [
-                {
-                    "projectId": 1047.0,
-                    "team": [
-                        {
-                            "projectId": 1047.0,
-                            "studentId": 21816.0,
-                            "whyProject": 0.5065285563468933,
-                            "whyExperience": 0.37186917662620544,
-                            "location_match": 2.0,
-                            "field": 12,
-                            "score": 71.91999053955078,
-                            "motivation_score": 84.96797180175781,
-                            "final_score": 68.04236508607865,
-                            "justification":...
-                        },...
-                    ],
-                    "avg_score": 64.25695798993111,
-                    "justification": [
-                        "Team includes students from 4 unique fields."
-                    ]
-                },
-            ]
-        """
-
         storage.save_json(suggested_teams, save_name)
 
         return suggested_teams
     
+    except ValueError:
+        raise
+
     except Exception as e:
-        print(f"Error occured, {e}")
+        print(f"Unexpected error occured, {e}")
         return None
 
 def merge_project_data(applicants, scores, moti_scores):
@@ -212,6 +200,16 @@ def merge_project_data(applicants, scores, moti_scores):
 
 def add_final_scores(data, f_weight=0.4, m_weight=0.3, l_weight=0.1, s_weight=0.2):
     
+    """
+    Adds finalized score to each applicant data based on:
+        - Fitting score
+        - Motivation
+        - Location
+        - Similarity score
+        
+        Weighs are notmalized to 1 and final score to range [0-100]
+    """
+
     #normalize weights
     total = f_weight + m_weight + l_weight + s_weight
     f_weight /= total
@@ -287,6 +285,9 @@ def suggest_teams_for_project(project_applicants,
     
         return team_suggestions
     
+    except ValueError:
+        raise
+
     except Exception as e:
         print(f"Error occured, {e}")
         return None
@@ -401,7 +402,7 @@ def suggest_teams_for_all_projects(
         print_rejection_explanations(applicants_by_project, project_pool, rejection_reasons)
 
 
-    # Refactored Step 4: Figures out which projects are doomed (cannot reach min team size)
+    # Step 4: Figures out which projects are doomed (cannot reach min team size)
     project_sizes = {pid: len(apps) for pid, apps in project_pool.items()}
 
     potential_adds = defaultdict(int)
@@ -436,7 +437,7 @@ def suggest_teams_for_all_projects(
         print_applicant_pool_summary(project_pool)
 
 
-    # Refactored Step 5:
+    # Step 5: Builds teams using the suggest_teams_for_project()
     assigned_to_team = set()
     
     for pid, applicants in project_pool.items():
@@ -502,6 +503,9 @@ def suggest_teams_for_all_projects(
     }
     
 def generate_team_justification(team):
+    """
+    Generates simple justifications to give insight why a team was suggested
+    """
     fields = {member['field'] for member in team}
     justification = []
 
@@ -586,6 +590,9 @@ def print_rejection_explanations(applicants_by_project, project_pool, rejection_
                 print(f"  - Student {int(sid)} rejected due to: {', '.join(reasons)}")
 
 def build_project_failure_reasons(applicants_by_project, project_pool, final_teams):
+    """
+    Generates simple justifications to give insight why project has no valid teams
+    """
     reasons = {}
     for pid in sorted(applicants_by_project.keys()):
         all_applicants = applicants_by_project[pid]

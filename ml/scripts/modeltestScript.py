@@ -3,6 +3,10 @@ from data_handling import get_cleaner
 
 #called from The-Dream-Team\ml>python -m scripts.model_test
 
+"""
+Simple script to run and test different ML models locally
+"""
+
 cleaners = ["data_cleaning_version2", "data_cleaning_version3"]
 
 models = ["randomforest_v2", "meta_model"]

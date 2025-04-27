@@ -3,6 +3,10 @@ import json
 
 #ml>python -m scripts.modular_cleaning_script
 
+"""
+Simple script to run data cleaners and testing out the modularity locally
+"""
+
 cleaners = ["data_cleaning_version4", "motivation_data_cleaning_version2"]
 
 print("initiate data cleaning")

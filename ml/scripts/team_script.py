@@ -5,6 +5,10 @@ import json
 #should create/update 2 files containing teams
 #expects student_score_example.json in local storage (data)
 
+"""
+Simple script to run the baseline teambuilder locally
+"""
+
 print("Begin team building")
 
 """n projectId loadName saveName"""

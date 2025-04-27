@@ -1,6 +1,10 @@
 from data_handling import data_cleaning
 import json
 
+"""
+Simple script to run a single cleaner
+"""
+
 print("initiate test for data cleaning")
 data = data_cleaning.clean_data_v2("rawData", "clean_test")
 
