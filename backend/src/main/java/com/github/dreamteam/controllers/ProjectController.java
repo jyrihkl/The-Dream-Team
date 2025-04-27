@@ -103,8 +103,8 @@ public class ProjectController {
         saveFile.orElse("default"));
 
     UriComponentsBuilder builder = UriComponentsBuilder.fromPath("redirect:/ml/score/predict");
-    modelType.ifPresent(type -> builder.queryParam("model_type", type));
-    modelName.ifPresent(name -> builder.queryParam("model_name", name));
+    modelType.ifPresent(type -> builder.queryParam("modelType", type));
+    modelName.ifPresent(name -> builder.queryParam("modelName", name));
     data.ifPresent(d -> builder.queryParam("data", d));
     cleaning.ifPresent(c -> builder.queryParam("cleaning", c));
     saveFile.ifPresent(file -> builder.queryParam("saveFile", file));
@@ -150,22 +150,32 @@ public class ProjectController {
   }
 
   /**
-   * Retrieves a collection of scores associated with all projects.
+   * Redirects to the ML component for retrieving all scores.
    *
    * @param request The HTTP request object.
+   * @param applicantsFile Optional parameter for specifying an applicants file.
    * @param scoreFile Optional parameter for specifying a score file.
+   * @param motivationFile Optional parameter for specifying a motivation file.
    * @return A ModelAndView object redirecting to the scores page.
    */
   @GetMapping("/scores")
   public ModelAndView getAllScores(
-      HttpServletRequest request, @RequestParam(required = false) Optional<String> scoreFile) {
+      HttpServletRequest request,
+      @RequestParam(required = false) Optional<String> applicantsFile,
+      @RequestParam(required = false) Optional<String> scoreFile,
+      @RequestParam(required = false) Optional<String> motivationFile) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
     LOGGER.info(
-        "Redirecting to ML component for all scores using score file {}",
-        scoreFile.orElse("default"));
+        "Redirecting to ML component for all scores with applicantsFile {}, scoreFile {}, "
+            + "motivationFile {}",
+        applicantsFile.orElse("default"),
+        scoreFile.orElse("default"),
+        motivationFile.orElse("default"));
 
     UriComponentsBuilder builder = UriComponentsBuilder.fromPath("redirect:/ml/score/scores");
+    applicantsFile.ifPresent(file -> builder.queryParam("applicantsFile", file));
     scoreFile.ifPresent(file -> builder.queryParam("scoreFile", file));
+    motivationFile.ifPresent(file -> builder.queryParam("motivationFile", file));
 
     return new ModelAndView(builder.toUriString());
   }
