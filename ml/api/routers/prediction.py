@@ -4,6 +4,7 @@ from models import get_model
 from utils import storage
 from utils.api_utils import validate_model
 from typing import Optional
+from team_building.dreamteam_builder import merge_project_data, add_final_scores
 
 router = APIRouter()
 
@@ -76,7 +77,9 @@ def start_prediction(
 @router.get("/scores")
 def get_scores(
     projectId: Optional[int] = Query(default=None, description="ID of the project to fetch scores for"),
-    scoreFile: str = Query(default="APIscore", description="Name of the score file")
+    applicantsFile: str = Query(default="clean_default", description="Data of applicants"),
+    scoreFile: str = Query(default="score_default", description="Name of the score file"),
+    motivationFile: str = Query(default="motivation_score", description="Name of the motivation file")
 
 ):
     """
@@ -87,7 +90,9 @@ def get_scores(
     Args:
         projectId (int, optional): ID of the project for which scores are required.
                                    If None, returns all scores.
-        scoreFile (str): Name of the score file to fetch scores from (default: "score_api_v1")
+        applicants_file (str): Name of the file containing applicant data. (default: "clean_default").
+        score_file (str): Name of the file containing scores. (default: "score_default").
+        motivation_file (str): Name of the file containing motivation scores. (default: "motivation_score").
 
     Returns:
         JSONResponse: List of scores or an error message.
@@ -96,11 +101,17 @@ def get_scores(
 
     try:
         #Load scores
+        applicants = storage.load_json(applicantsFile)
         scores = storage.load_json(scoreFile)
+        motivations = storage.load_json(motivationFile)
 
-        #Filter by projectId if provided
+        merged_scores = merge_project_data(applicants, scores, motivations)
+        final_scores = add_final_scores(merged_scores)
+
+        # Filter by projectId if provided
         if projectId is not None:
-            filtered_scores = [entry for entry in scores if entry.get("projectId") == projectId]
+            # Filter to only include studentId, score, motivation using format expected by frontend
+            filtered_scores = [{"studentId": entry["studentId"], "Score": entry["score"], "motivation": entry["motivation_score"]} for entry in final_scores if entry.get("projectId") == projectId]
             
             if not filtered_scores:
                 return JSONResponse(
@@ -108,11 +119,6 @@ def get_scores(
                     content={"error": f"No scores found for projectId {projectId}"}
                 )
             
-            #Filter to only include studentId, score
-            filtered_scores = [
-                {"studentId": entry["studentId"], "Score": entry["Score"]}
-                for entry in filtered_scores
-            ]
 
             return JSONResponse(
                 status_code=200,
@@ -120,10 +126,10 @@ def get_scores(
             )
         
 
-        #Filter to only include projectId, studentId, score
+        # Filter to only include projectId, studentId, score, motivation using format expected by frontend
         filtered_scores = [
-            {"projectId": entry["projectId"], "studentId": entry["studentId"], "Score": entry["Score"]}
-            for entry in scores
+            {"projectId": entry["projectId"], "studentId": entry["studentId"], "Score": entry["score"], "motivation": entry["motivation_score"]}
+            for entry in final_scores
         ]
 
         if not filtered_scores:

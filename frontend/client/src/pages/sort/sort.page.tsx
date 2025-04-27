@@ -13,11 +13,12 @@ import SortColumn from "../../components/sort-column/sort-column.component";
 import SortDropdown from "../../components/sort-dropdown/sort-dropdown.component";
 import { updateAllStudentLabels, updateMovedStudentsLabels } from "./label-helpers";
 import { setStudentLocationTo } from "../../services/student/location.service";
-import { useProjectContext } from "../../services/project/project.provider";
+import { useProjectContext } from "../../providers/project/project.provider";
 import { addInitialStudentLocations, addStudentLocationsViaML } from "./students-to-columns";
-import { useAuth } from "../../services/auth/auth.provider";
+import { useAuth } from "../../providers/auth/auth.provider";
 import { getStudents } from "../../services/student/student.service";
 import { handleDragEnd, parseDragIDs } from "./drag-helpers";
+import { useML } from "../../providers/ML/ml.provider";
 import { addScoreForStudents } from "./score-helpers";
 import { createStudentSorter } from "./sorting";
 
@@ -30,6 +31,7 @@ const Sort = () => {
     let { id } = useParams();
     const { token } = useAuth();
     const { currentProject } = useProjectContext();
+    const mlContext = useML();
 
     const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
     const [ isDragging, setDragging ] = useState<boolean>(false);
@@ -63,7 +65,7 @@ const Sort = () => {
         const projectId = +id!;
         const oldUnwrappedStudents = students.map(wrapped => wrapped.student);
 
-        const newStudents = await addStudentLocationsViaML(projectId, oldUnwrappedStudents, token!);
+        const newStudents = await addStudentLocationsViaML(projectId, oldUnwrappedStudents, token!, mlContext);
         setStudents(newStudents);
 
         updateAllStudentLabels(currentProject!.name, newStudents);

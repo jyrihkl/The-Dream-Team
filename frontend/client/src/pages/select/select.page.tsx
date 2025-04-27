@@ -8,7 +8,7 @@ import { Project } from "../../types/Project";
 /* Components, services & etc. */
 import ProjectSelect from "../../components/project-select/project-select.component";
 import { getProjects } from "../../services/project/project.service";
-import { useAuth } from "../../services/auth/auth.provider";
+import { useAuth } from "../../providers/auth/auth.provider";
 import studentLabeler from "./student-marker";
 
 /* Styling */

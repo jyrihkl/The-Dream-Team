@@ -293,11 +293,11 @@ def suggest_teams_for_project(project_applicants,
     
 def is_valid_team(
         team, 
-        score_threshold = 50, 
+        score_threshold = 40, 
         unique_fields = 2, 
         only_locals = False, 
         max_score_gap = 30,
-        min_team_avg = 57
+        min_team_avg = 40
 ):
     """
         Validates teams based on teambuilding restrictions:

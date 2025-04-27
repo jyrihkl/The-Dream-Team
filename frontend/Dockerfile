@@ -15,6 +15,8 @@ COPY client .
 # Environment variable for demo mode
 ARG DEMO_MODE
 ENV VITE_DEMO_MODE=${DEMO_MODE:-false}
+ARG ML_TYPE
+ENV VITE_ML_TYPE=${ML_TYPE:-advanced}
 
 # Set API endpoint env variable
 ENV VITE_API_ENDPOINT=http://localhost/api

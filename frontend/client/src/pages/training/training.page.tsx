@@ -1,20 +1,26 @@
+/* Lib imports */
+import { FormEvent } from "react";
+
+/* Types */
+import { TrainingStatus } from "../../types/ML";
+
 /* Components, services & etc. */
-import { useState } from "react";
-import { useAuth } from "../../services/auth/auth.provider";
+import { useAuth } from "../../providers/auth/auth.provider";
 import { initML } from "../../services/score/score.service";
-import { isML_up, setML_status } from "../../services/ML/ml.service";
+import { useML } from "../../providers/ML/ml.provider";
 
 /* Styling */
 import "./training.page.scss";
 
-type TrainingStatus = "uninitialized" | "error" | "initialized" | "loading";
+
+const TEAM_SIZE_INPUT_NAME: string = "team-size";
 
 const Training = () => {
     const { token } = useAuth();
-    const [ trainStatus, setTrainStatus ] = useState<TrainingStatus>(() => isML_up() ? "initialized" : "uninitialized");
+    const { ml_type, status, setStatus, setTeamSize } = useML();
     
-    const statusToMsg = (status: TrainingStatus) => {
-        switch (status) {
+    const statusToMsg = (trainStatus: TrainingStatus) => {
+        switch (trainStatus) {
             case "error":
                 return <p>There was an error!</p>
             case "uninitialized":
@@ -28,21 +34,35 @@ const Training = () => {
         }
     }
 
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (ml_type == "advanced") {
+            setTeamSize(+Object.fromEntries(new FormData(event.currentTarget).entries())[TEAM_SIZE_INPUT_NAME]);
+        }
+        setStatus("loading");
+        initML(token!, ml_type === "basic" ? "basic" : "advanced")
+        .then(() => setStatus("initialized"))
+        .catch(() => setStatus("error"));
+    }
+
     return <div className="training-page">
         {
             token ?
             <>
-                <div className="initializer">
-                    <h2>Initialize the ML model:</h2>
-                    <button onClick={() => {
-                        setTrainStatus("loading");
-                        const req = initML(token!);
-                        req.then(setML_status);
-                        req.then(() => setTrainStatus("initialized"));
-                    }}>Initialize</button>
-                </div>
+                <form className="initializer" onSubmit={handleSubmit}>
+                    <h2>Initialize the ML model</h2>
+                    <div className="inputs">
+                        {
+                            ml_type === "advanced" && 
+                            <label>
+                                Team size: <input name={TEAM_SIZE_INPUT_NAME} type="number" defaultValue={4}/>
+                            </label>
+                        }
+                        <button type="submit">Initialize</button>
+                    </div>
+                </form>
                 <span className="training-status">
-                    { statusToMsg(trainStatus) }
+                    { statusToMsg(status) }
                 </span>
             </>
             :

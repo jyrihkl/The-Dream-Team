@@ -2,7 +2,7 @@
 import { Link } from "react-router";
 
 /* Components, services & etc. */
-import { useAuth } from "../../services/auth/auth.provider";
+import { useAuth } from "../../providers/auth/auth.provider";
 
 /* Styling */
 import "./header.component.scss";

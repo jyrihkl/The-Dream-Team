@@ -98,9 +98,18 @@ class ProjectControllerTest {
    */
   @Test
   void testPredictRedirect() {
-    var response = projectController.predict(request);
+    var response =
+        projectController.predict(
+            request,
+            Optional.of("modelType"),
+            Optional.of("modelName"),
+            Optional.of("data"),
+            Optional.of(false),
+            Optional.of("saveFile"));
 
-    assertThat(response.getViewName()).isEqualTo("redirect:/ml/score/predict");
+    assertThat(response.getViewName()).startsWith("redirect:/ml/score/predict");
+    assertThat(response.getViewName()).contains("modelType=modelType");
+    assertThat(response.getViewName()).contains("saveFile=saveFile");
     verify(request).setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
   }
 
@@ -110,7 +119,9 @@ class ProjectControllerTest {
    */
   @Test
   void testGetScoresRedirect() {
-    var response = projectController.getScores(request, 101L, Optional.of("file.csv"));
+    var response =
+        projectController.getScores(
+            request, 101L, Optional.empty(), Optional.of("file.csv"), Optional.empty());
 
     assertThat(response.getViewName())
         .isEqualTo("redirect:/ml/score/scores?projectId=101&scoreFile=file.csv");

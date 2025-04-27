@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { Project } from "../../types/Project";
 
 /* Components, services & etc. */
-import { useProjectContext } from "../../services/project/project.provider";
+import { useProjectContext } from "../../providers/project/project.provider";
 
 /* Styling */
 import "./project-select.component.scss";

@@ -1,4 +1,7 @@
+/* Lib imports */
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+
+/* Types */
 import { Project } from "../../types/Project";
 
 type ProjectProviderType = {

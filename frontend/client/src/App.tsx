@@ -1,19 +1,21 @@
 /* Components, services & etc. */
-import { ProjectProvider } from "./services/project/project.provider";
-import { AuthProvider } from "./services/auth/auth.provider";
-import { Routes } from "./services/router/router.provider";
+import { createProviders } from "./providers/providers";
+import { ProjectProvider } from "./providers/project/project.provider";
+import { AuthProvider } from "./providers/auth/auth.provider";
+import { MLProvider } from "./providers/ML/ml.provider";
+import { Routes } from "./providers/router/router.provider";
 
 /* Styling */
 import './App.scss';
 
 
 function App() {
+  const Providers = createProviders(AuthProvider, MLProvider, ProjectProvider);
+
   return (
-    <AuthProvider>
-      <ProjectProvider>
-        <Routes />
-      </ProjectProvider>
-    </AuthProvider>
+    <Providers>
+      <Routes />
+    </Providers>
   );
 }
 

@@ -141,6 +141,7 @@ services:
       context: ./frontend
       args:
         - DEMO_MODE=true
+        - ML_TYPE=advanced
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_PORT:-3000}"
@@ -160,7 +161,10 @@ services:
 
   ml:
     # The machine learning service used for ranking and team forming
-    build: ./ml
+    build:
+      context: ./ml
+      args:
+        - ML_REQ=requirements-full.txt
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.ml.loadbalancer.server.port=${ML_PORT:-9696}"
