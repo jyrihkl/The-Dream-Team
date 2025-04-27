@@ -118,24 +118,33 @@ public class ProjectController {
    *
    * @param request The HTTP request object.
    * @param projectId The ID of the project for which to retrieve scores.
+   * @param applicantsFile Optional parameter for specifying an applicants file.
    * @param scoreFile Optional parameter for specifying a score file.
+   * @param motivationFile Optional parameter for specifying a motivation file.
    * @return A ModelAndView object redirecting to the scores page.
    */
   @GetMapping("/{projectId}/scores")
   public ModelAndView getScores(
       HttpServletRequest request,
       @PathVariable Long projectId,
-      @RequestParam(required = false) Optional<String> scoreFile) {
+      @RequestParam(required = false) Optional<String> applicantsFile,
+      @RequestParam(required = false) Optional<String> scoreFile,
+      @RequestParam(required = false) Optional<String> motivationFile) {
     request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
     LOGGER.info(
-        "Redirecting to ML component for scores of project {} using score file {}",
+        "Redirecting to ML component for scores with projectId {}, applicantsFile {}, scoreFile {},"
+            + " motivationFile {}",
         projectId,
-        scoreFile.orElse("default"));
+        applicantsFile.orElse("default"),
+        scoreFile.orElse("default"),
+        motivationFile.orElse("default"));
 
     UriComponentsBuilder builder =
         UriComponentsBuilder.fromPath("redirect:/ml/score/scores")
             .queryParam("projectId", projectId);
+    applicantsFile.ifPresent(file -> builder.queryParam("applicantsFile", file));
     scoreFile.ifPresent(file -> builder.queryParam("scoreFile", file));
+    motivationFile.ifPresent(file -> builder.queryParam("motivationFile", file));
 
     return new ModelAndView(builder.toUriString());
   }
