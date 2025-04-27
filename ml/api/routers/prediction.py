@@ -77,9 +77,9 @@ def start_prediction(
 @router.get("/scores")
 def get_scores(
     projectId: Optional[int] = Query(default=None, description="ID of the project to fetch scores for"),
-    applicants_file: str = Query(default="clean_default", description="Data of applicants"),
-    score_file: str = Query(default="score_default", description="Name of the score file"),
-    motivation_file: str = Query(default="motivation_score", description="Name of the motivation file")
+    applicantsFile: str = Query(default="clean_default", description="Data of applicants"),
+    scoreFile: str = Query(default="score_default", description="Name of the score file"),
+    motivationFile: str = Query(default="motivation_score", description="Name of the motivation file")
 
 ):
     """
@@ -101,9 +101,9 @@ def get_scores(
 
     try:
         #Load scores
-        applicants = storage.load_json(applicants_file)
-        scores = storage.load_json(score_file)
-        motivations = storage.load_json(motivation_file)
+        applicants = storage.load_json(applicantsFile)
+        scores = storage.load_json(scoreFile)
+        motivations = storage.load_json(motivationFile)
 
         merged_scores = merge_project_data(applicants, scores, motivations)
         final_scores = add_final_scores(merged_scores)
